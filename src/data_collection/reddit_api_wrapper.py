@@ -24,7 +24,31 @@ def get_reddit_instance():
 
 ### SI keywords filtering for r/depression ###
 def contains_si_keywords(text):
-    si_keywords = ['kill myself', 'end my life', 'suicidal', 'suicide', 'don\'t want to live', 'no reason to live', 'plan to die', 'take my own life', 'end it all', 'better off dead', 'goodbye note', 'final message', 'attempted suicide']
+    si_keywords = [
+        # Direct SI expression
+        # (1st Batch)
+        'kill myself', 'end my life', 'suicidal', 'suicide', 'don\'t want to live', 'no reason to live', 'plan to die', 'take my own life', 'end it all', 'better off dead', 'goodbye note', 'final message', 'attempted suicide',
+        # (2nd Batch)
+        'unalive', 'cease to exist', 'don\'t want to exist', 'sleep forever',
+        'not wake up', 'leave this world', 'no longer here',
+        
+        # Need phrase-based matching
+        'life isn\'t worth it', 'tired of living', 'better off without me',
+        'nobody needs me', 'waste of space', 'ruin everything',    
+
+        # High-intent phrases
+         'planned everything', 'set date', 'can\'t be stopped',
+         'end tonight', 'won\'t be here tomorrow',
+
+        # Preparation behaviors
+        'goodbye message', 'giving away things', 'delete account',
+        'last post', 'last day', 'this is it',
+
+        # Hindi phrases (excellent addition)
+        'chhod dena hai sab', 'khatam karna hai', 'ab aur nahi',
+        'mar jaunga', 'mar jaungi', 'jaane ka time aa gaya'
+
+        ]
 
     text_lower = text.lower()
     for keyword in si_keywords:
@@ -48,7 +72,7 @@ def get_preliminary_label(subreddit_name, title, text):
         return 'UNKNOWN'
 
 ### Collecting subreddit posts ###
-def collect_subreddit_posts(reddit, subreddit_name, limit=10):
+def collect_subreddit_posts(reddit, subreddit_name, limit=10, delay=0.5):
     posts = []
 
     min_lengths = {
@@ -94,7 +118,7 @@ def collect_subreddit_posts(reddit, subreddit_name, limit=10):
                 print(f"Length: {len(submission.selftext)} chars")
                 print("-" * 50)
 
-                time.sleep(0.5)
+                time.sleep(delay)
     except ResponseException as e:
         print(f"API Error for r/{subreddit_name}: {e}")
     except Exception as e:
@@ -104,17 +128,43 @@ def collect_subreddit_posts(reddit, subreddit_name, limit=10):
 
 ### Saving posts to JSON file ###
 def save_posts_to_json(posts, subreddit_name, data_dir="data/raw"):
-    os.makedirs(data_dir, exist_ok=True)
+    if not posts:
+        print("No posts to save.")
+        return None
+    
+    try:
+        now = datetime.now()
+        data_dir = os.path.join(data_dir, now.strftime("%Y"), now.strftime("%m"), now.strftime("%d"))
+        os.makedirs(data_dir, exist_ok=True)
 
-    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    filename = f"{subreddit_name}_{timestamp}.json"
-    filepath = os.path.join(data_dir, filename)
+        timestamp = now.strftime('%H%M%S_%f')[:-3]
+        filename = f"{subreddit_name}_{timestamp}.json"
+        filepath = os.path.join(data_dir, filename)
 
-    with open(filepath, 'w', encoding='utf-8') as f:
-        json.dump(posts, f, indent=2, ensure_ascii=False)
+        data_to_save = {
+            'collection_info': {
+                'subreddit': subreddit_name,
+                'post_count': len(posts),
+                'collection_timestamp': now.isoformat(),
+                'script_version': '2.0'             
+            },
+            'posts': posts
+        }
 
-    print(f"Saved to: {filepath}")
-    return filepath
+
+        with open(filepath, 'w', encoding='utf-8') as f:
+            json.dump(data_to_save, f, indent=2, ensure_ascii=False)
+
+        file_size = os.path.getsize(filepath)
+        print(f"Saved {len(posts)} posts from r/{subreddit_name}")
+        print(f"File: {filepath}")
+        print(f"Size: {file_size/1024:.2f} KB")
+        
+        return filepath
+
+    except Exception as e:
+        print(f"Error saving posts: {e}")
+        return None
 
 ### Main function to collect posts from multiple subreddit 
 def main():
@@ -125,8 +175,8 @@ def main():
     
     target_subreddit = {
         'SI': ['SuicideWatch'],
-        'MH': ['depression', 'BPD'],
-        'NEU': ['college', 'collegeIndia', 'TwentiesIndia', 'Vent']
+        'MH': ['depression', 'BPD', 'Vent'],
+        'NEU': ['college', 'collegeIndia', 'TwentiesIndia']
     }
 
     all_subreddits = []
@@ -138,7 +188,7 @@ def main():
     all_collected_posts = {}
 
     for subreddit_name in all_subreddits:
-        posts = collect_subreddit_posts(reddit, subreddit_name, limit=20)
+        posts = collect_subreddit_posts(reddit, subreddit_name, limit=50)
 
         if posts:
             filepath = save_posts_to_json(posts, subreddit_name)
@@ -151,8 +201,7 @@ def main():
             for post in posts:
                 label = post['prelim_label']
                 all_collected_posts[subreddit_name]['labels'][label] = \
-                    all_collected_posts[subreddit_name]['labels'].get(label, 0) + 1
-                
+                    all_collected_posts[subreddit_name]['labels'].get(label, 0) + 1             
         else:
             all_collected_posts[subreddit_name] = {
                 'count': 0,
@@ -162,30 +211,30 @@ def main():
 
         time.sleep(2)
 
-        print("\n" + "="*70)
-        print("COLLECTION SUMMARY")
-        print("="*70)
+    print("\n" + "="*70)
+    print("COLLECTION SUMMARY")
+    print("="*70)
 
-        total_posts = 0
-        label_totals = {'SI': 0, 'MH': 0, 'NEU': 0}
+    total_posts = 0
+    label_totals = {}
 
-        for subreddit, info in all_collected_posts.items():
-            if info['file']:
-                print(f"r/{subreddit}: {info['count']} posts => {info['file']}")
-                for label, count in info['labels'].items():
-                    print(f" {label}: {count} posts")
-                    if label in label_totals:
-                        label_totals[label] += count
-            else:
-                print(f"r/{subreddit}: {info['count']} posts (no file created)")
-            total_posts += info['count']
+    for subreddit, info in all_collected_posts.items():
+        if info['file']:
+            print(f"r/{subreddit}: {info['count']} posts => {info['file']}")
+            for label, count in info['labels'].items():
+                print(f" {label}: {count} posts")
+                if label in label_totals:
+                    label_totals[label] += count
+        else:
+            print(f"r/{subreddit}: {info['count']} posts (no file created)")
+        total_posts += info['count']
 
-        print(f"Label Distribution:")
-        for label, count in label_totals.items():
-            print(f" {label}: {count} posts")
+    print(f"Label Distribution:")
+    for label, count in label_totals.items():
+        print(f" {label}: {count} posts")
 
-        print(f"Total post collected: {total_posts}")
-        print("Data collection complete!")
+    print(f"Total post collected: {total_posts}")
+    print("Data collection complete!")
 
 if __name__ == "__main__":
     main()
