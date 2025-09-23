@@ -1,4 +1,7 @@
 import praw
+import requests
+from PIL import Image
+import pytesseract
 import os, time, json
 from datetime import datetime
 from dotenv import load_dotenv
@@ -64,12 +67,63 @@ def get_preliminary_label(subreddit_name, title, text):
         if contains_si_keywords(title + " " + text):
             return 'SI_EXCLUDED'
         return 'MH'
-    elif subreddit_name == 'Vent':
+    elif subreddit_name in ['BPD', 'Vent']:
         return 'MH'
-    elif subreddit_name == ['college', 'collegeIndia']:
+    elif subreddit_name in ['college', 'collegeIndia', 'TwentiesIndia']:
         return 'NEU'
+    elif subreddit_name in ['teenagers', 'suicidebywords', 'memes', 'darkjokes', 
+                            'IndianDankMemes', 'dankmemes', '2meirl4meirl']:
+        return 'HUMOR'
     else:
         return 'UNKNOWN'
+
+### Collecting meme image urls from submission
+def is_image_url(url):
+    image_extensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp']
+    return any(url.lower().endswith(ext) for ext in image_extensions)
+
+def download_image(url, subreddit_name, post_id, image_dir='data/images'):
+    os.makedirs(image_dir, exist_ok=True)
+    filename = f"{subreddit_name}_{post_id}{os.path.splitext(url)[-1]}"
+    filepath = os.path.join(image_dir, filename)
+    try:
+        response = requests.get(url)
+        if response.status_code == 200:
+            with open(filepath, 'wb') as f:
+                f.write(response.content)
+            return filepath
+    except Exception as e:
+        print(f"Error downloading image: {e}")
+    return None
+
+def extract_text_from_image(image_path):
+    if not image_path or not os.path.exists(image_path):
+        return ""
+    try:
+        print(f"Processing image: {os.path.basename(image_path)}")
+        img = Image.open(image_path)
+        text = pytesseract.image_to_string(img)
+
+        os.remove(image_path)
+        print(f"Deleted image after OCR: {os.path.basename(image_path)}")
+
+        if text:
+            print("Extracted {len(text)} characters")
+        else:
+            print("No text found in image")
+
+        return text
+    
+    except Exception as e:
+        print(f"OCR error for {image_path}: {e}")
+
+        try:
+            if os.path.exists(image_path):
+                os.remove(image_path)
+                print(f"Deleted problematic image: {os.path.basename(image_path)}")
+        except Exception as del_e:
+            print(f"Error deleting image: {del_e}")
+        return ""
 
 ### Collecting subreddit posts ###
 def collect_subreddit_posts(reddit, subreddit_name, limit=10, delay=0.5):
@@ -80,45 +134,77 @@ def collect_subreddit_posts(reddit, subreddit_name, limit=10, delay=0.5):
         'depression': 200,
         'Vent': 200,
         'college': 80,
-        'collegeIndia': 80
+        'collegeIndia': 80,
+        # Humor
+        'teenagers': 30,
+        'suicidebywords': 20,
+        'memes': 10, 
+        'darkjokes': 50, 
+        'IndianDankMemes': 10,
+        'dankmemes': 10,
+        '2meirl4meirl': 20
     }
 
-    min_lengths = min_lengths.get(subreddit_name, 50)
+    min_length = min_lengths.get(subreddit_name, 50)
 
     try:
-        print(f"\n Collecting from r/{subreddit_name} (min_length: {min_lengths})...")
+        print(f"\n Collecting from r/{subreddit_name}...")
         subreddit = reddit.subreddit(subreddit_name)
 
         for submission in subreddit.hot(limit=limit):
-            if (submission.selftext and len(submission.selftext.strip()) >= min_lengths and submission.selftext.strip() not in ['[deleted]', '[removed]']):
+            has_valid_text = (
+                submission.selftext and 
+                len(submission.selftext.strip()) >= min_length and 
+                submission.selftext.strip() not in ['[deleted]', '[removed]']
+            )
+            is_image_post = hasattr(submission, 'url') and is_image_url(submission.url)
 
-                prelim_label = get_preliminary_label(subreddit_name, submission.title, submission.selftext)
+            if not (has_valid_text or is_image_post):
+                continue
+
+            post_text_for_labeling = submission.selftext if submission.selftext else ""
+            prelim_label = get_preliminary_label(subreddit_name, submission.title, post_text_for_labeling)
                 
-                if prelim_label == 'SI_EXCLUDED':
-                    print(f"Skipped SI post from r/depression: {submission.title[:50]}...")
-                    continue
+            if prelim_label == 'SI_EXCLUDED':
+                print(f"Skipped SI post from r/depression: {submission.title[:50]}...")
+                continue
 
-                post_data = {
-                    'id': submission.id,
-                    'title': submission.title,
-                    'text': submission.selftext,
-                    'subreddit': subreddit_name,
-                    'created_utc': submission.created_utc,
-                    'score': submission.score,
-                    'num_comments': submission.num_comments,
-                    'url': submission.url,
-                    'text_length': len(submission.selftext),
-                    'prelim_label': prelim_label,
-                    'collection_date': datetime.now().isoformat()
+            meme_text = None
+            if is_image_post:
+                image_file = download_image(submission.url, subreddit_name, submission.id)
+                if image_file:
+                    meme_text = extract_text_from_image(image_file)
+
+            post_text = submission.selftext if submission.selftext else ""
+
+            post_data = {
+                'id': submission.id,
+                'title': submission.title,
+                'text': post_text,
+                'image_path': None,
+                'meme_text': meme_text,
+                'had_image': is_image_post,
+                'subreddit': subreddit_name,
+                'created_utc': submission.created_utc,
+                'score': submission.score,
+                'num_comments': submission.num_comments,
+                'url': submission.url,
+                'text_length': len(post_text),
+                'prelim_label': prelim_label,
+                'collection_date': datetime.now().isoformat()
                 }
-                posts.append(post_data)
+            posts.append(post_data)
+                
 
-                print(f"[{prelim_label}] Title: {submission.title[:60]}...")
+            print(f"[{prelim_label}] Title: {submission.title[:60]}...")
+            if has_valid_text:
                 print(f"Text: {submission.selftext[:80]}...")
-                print(f"Length: {len(submission.selftext)} chars")
-                print("-" * 50)
+            if meme_text:
+                clean_meme_text = meme_text.replace('\n', ' ')[:80]
+                print(f"Meme Text: {clean_meme_text}...")
+            print("-" * 50)
 
-                time.sleep(delay)
+            time.sleep(delay)
     except ResponseException as e:
         print(f"API Error for r/{subreddit_name}: {e}")
     except Exception as e:
@@ -176,18 +262,20 @@ def main():
     target_subreddit = {
         'SI': ['SuicideWatch'],
         'MH': ['depression', 'BPD', 'Vent'],
-        'NEU': ['college', 'collegeIndia', 'TwentiesIndia']
+        'NEU': ['college', 'collegeIndia', 'TwentiesIndia'],
+        'HUMOR': ['teenagers', 'suicidebywords', 'memes', 'darkjokes', 
+                  'IndianDankMemes', 'dankmemes', '2meirl4meirl']
     }
 
-    all_subreddits = []
+    all_subreddit = []
 
     for category, subs in target_subreddit.items():
-        all_subreddits.extend(subs)
+        all_subreddit.extend(subs)
 
 
     all_collected_posts = {}
 
-    for subreddit_name in all_subreddits:
+    for subreddit_name in all_subreddit:
         posts = collect_subreddit_posts(reddit, subreddit_name, limit=50)
 
         if posts:
@@ -216,6 +304,7 @@ def main():
     print("="*70)
 
     total_posts = 0
+    images_posts = 0
     label_totals = {}
 
     for subreddit, info in all_collected_posts.items():
@@ -228,6 +317,10 @@ def main():
         else:
             print(f"r/{subreddit}: {info['count']} posts (no file created)")
         total_posts += info['count']
+
+    for subreddit_name in all_subreddit:
+        if all_collected_posts[subreddit_name]['file']:
+            pass
 
     print(f"Label Distribution:")
     for label, count in label_totals.items():
