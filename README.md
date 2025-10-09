@@ -11,23 +11,45 @@ Building a machine learning tool to detect suicidal ideation, suicidal plans, su
         'NEU': ['college', 'collegeIndia', 'TwentiesIndia'], # For Netural behavior
         'HUMOR': ['teenagers', 'suicidebywords', 'memes', 'darkjokes','IndianDankMemes', 'dankmemes', '2meirl4meirl'] # For distingushing humor and SI ideation
     )
-  labeling scheme (binary and multi-level):
+- labeling scheme (binary and multi-level):
   - Binary classes: Every post is labeled either “suicidal ideation” or “non‑suicidal,” nothing in between. This makes models easier to train and results simpler to      report, but it can’t tell apart different risk levels like passive thoughts, active intent, or plans. Binary labeling reduces annotation effort and class             imbalance complexity, providing a clean starting point for benchmarking before moving to multi‑level labels.
 
   - Multi‑level: multiple classes that capture risk levels or categories, such as Mental Health, Neutral and Humor, this offers richer signals for analysis and           multiple levels let models and analyses distinguish passive thoughts from planning or attempts, which is valuable for research on risk progression and triage         logic.
-  preprocessing scope (de-identification, filtering, OCR for memes), and the intended use constraints (research, non-clinical).
+ 
+- Preprocessing scope:
+    We de‑identify user references, filter by English language and length, remove spam/duplicates, and apply OCR to image posts to extract embedded text.                 All steps are deterministic and versioned.
+    
+- Intended use constraints (research, non-clinical):
+    For research only. Not a diagnostic tool. Do not use to make clinical decisions or trigger automated actions without expert oversight,                                institutional review, and external validation. Adhere to platform terms; do not redistribute raw text.
+    
 
 ### Background and motivation
 - Briefly explain why suicidal ideation detection is studied (early identification can support triage/intervention), and why social media text is used (timeliness and scale with caution about biases and noise).
-- Cite high-level evidence that modern NLP (deep learning and transformers) often outperforms traditional ML on this task but suffers from dataset biases, label reliability issues, and generalization concerns.
+  
+- Across text classification tasks for suicidal ideation, modern NLP methods—deep neural networks and transformer-based models—tend to outperform traditional machine learning baselines on in-domain benchmarks, reflecting stronger representation learning and context modeling.
+
+However, performance gains are often coupled with vulnerabilities: dataset and sampling biases, noisy or weak labels, shortcut learning (e.g., subreddit/keywords as proxies), and limited generalization across time, users, and platforms.
+
+Recent evaluations emphasize the need for author-disjoint and domain-shifted splits, external validation, and robust error analysis to avoid inflated estimates and to assess real-world reliability beyond benchmark conditions.
+
 
 ### Scope and intended use
-- Intended use: research, benchmarking, method development for SI detection; explicitly not for clinical decision-making or real-time moderation without oversight and external validation.
-- Out-of-scope: diagnosis, replacement of professionals, deployment without bias, safety, and drift assessments.
+- Intended use:
+This project and its models are for research, benchmarking, and method development in suicidal ideation (SI) detection using social media text; they are not medical devices and must not be used for clinical decision-making or real-time content moderation without qualified human oversight, institutional approval, and external validation on appropriate populations.
+
+- Out-of-scope: 
+This work must not be used for diagnosis, crisis triage, or to replace licensed professionals; it must not be deployed without documented assessments of bias, safety, calibration, generalization, and model/feature drift, and without robust governance for monitoring and human-in-the-loop review.
 
 ### Data sources
-- Platforms and subreddits (e.g., r/SuicideWatch, r/depression, r/mentalhealth, r/Vent; adjust to the actual list collected), with collection windows and APIs/tools used for acquisition.[1][8]
-- Include any other corpora used (e.g., public Twitter SI datasets if applicable) and note differences in domain and annotation practices.[4][5]
+- Platforms and subreddits:
+Data was collected from Reddit communities focused on mental health, support, and adjacent contexts, including r/SuicideWatch, r/depression, r/mentalhealth, r/MentalHealthSupport, r/Vent, r/BPD, r/selfharm, r/AdultSelfHarm, r/SelfHate, and contrast domains such as r/memes, r/dankmemes, r/2meirl4meirl, r/teenagers, r/college, and r/TwentiesIndia, reflecting common research practice for SI detection and mental health analysis on Reddit.
+
+- Collection windows and acquisition:
+Submissions were gathered across multiple scripted runs using Reddit’s Data API with OAuth credentials, accessing subreddit listings via hot, new, and time-filtered top endpoints during the project’s active collection period; rate limits adhered to Reddit’s guidance (e.g., ~100 QPM per client averaged over windows) while paginating listing endpoints per API conventions.
+
+- APIs/tools used:
+The primary toolchain used Python Reddit API Wrapper (PRAW) to authenticate, traverse subreddit listings, and extract submission metadata and text; auxiliary utilities included OCR for meme-text extraction, and standard JSON/CSV serialization, consistent with tutorials and official PRAW documentation; open-source collectors like RedditHarbor and general API guides illustrate equivalent pipelines for researchers.
+
 
 ### Collection methodology
 - Querying criteria: keywords, subreddit membership, time windows, filters (language=English, min length), and inclusion/exclusion rules (spam, bots, duplicates).[6][8]
@@ -98,6 +120,8 @@ Practical next steps to finalize the documentation:
 - Lock author-disjoint and time-based splits; compute per-split stats and leak checks; freeze seeds and store split manifests.[3][8]
 - Write an ethical use and access policy page with a clear non-clinical use disclaimer and instructions for requesting access, if controlled.[10][8]
 - Add a Baselines section with one traditional ML, one LSTM/CNN, and one transformer fine-tune plan; reserve results slots to fill after preprocessing.[8][3]
+
+“This repository is intended for research, benchmarking, and method development for suicidal ideation detection on social media text. It is not a medical device and must not be used for clinical decision-making or automated moderation without qualified human oversight, institutional review, and external validation. The project is out-of-scope for diagnosis, professional replacement, and any deployment lacking documented assessments of bias, safety, calibration, and drift, along with monitoring, governance, and user privacy protections.”
 
 If helpful, a concise template to start the README or dataset card:
 - Title and version; summary (3–5 lines).[8]
