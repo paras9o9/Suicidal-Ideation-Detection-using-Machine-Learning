@@ -21,7 +21,7 @@ This codebook defines labels for binary (SI vs non-SI) and multiclass (SI, MH, N
 **Examples**:
 - Positive: "I keep thinking about taking all my pills"
 - Positive: "I feel like I’m constantly postponing my inevitable suicide"
-- POsitive: "i don’t want to die anymore but this time it looks like i might anyway"
+- Positive: "i don’t want to die anymore but this time it looks like i might anyway"
 - Positive: "i want to end it so badly, give me a reason not to."
 - Positive: "Everyday I wonder if I should just give up"
 - Positive: "I think about suicide to frequently and idk what to think."
