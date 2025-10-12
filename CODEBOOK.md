@@ -58,6 +58,16 @@ This codebook defines labels for binary (SI vs non-SI) and multiclass (SI, MH, N
 - Positive: "My life is a mess and I can’t forgive myself."
 - Positive: "I feel like I need a break, is this shameful?"
 - Negative: "I'm so depressed I don't want to live" → SI
+- Negative: "YLOYD - You laugh or you die"
+- Negative: "Without him I have nobody anymore."
+- Negative: "Chalo utho bhai subah ho gayi, gym/running ka time ho gaya !"
+- Negative: "My mom doesn’t understand me and it’s suffocating"
+- Negative: "I just realized what a creep I've been towards my best friend and I don't know how to cope with myself."
+- Negative: "Nobody's in the office & No work & I'm bored AF"
+- Negative: "I don’t wanna die"
+- Negative: "If death is so common why am I still alive?"
+- Negative: "Why is everyone rude to each other?"
+- Negative: "I'm ruining my life"
 
 ### NEU (Neutral)
 **Definition**: Off-topic, no mental health or suicidality signals.
