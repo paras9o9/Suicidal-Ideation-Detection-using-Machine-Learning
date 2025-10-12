@@ -31,14 +31,14 @@ This codebook defines labels for binary (SI vs non-SI) and multiclass (SI, MH, N
 - Positive: "I just tried to kill myself but I’m too big of a pussy"
 - Negative: "I used to be suicidal but I'm okay now"
 - Negative: "How would you like to live?"
-- Negative: "Will i randomly commit suicide?"
-- Negative: "Why doesn't everyone want to die"
-- Negative: "i'm so tired i just want to die"
-- Negative: "I don't want to be here anymore but I have to"
-- Negative: "Life has gone incredibly downhill since the last 1 month."
-- Negative: "Do you ever feel bad about yourself ?"
+- Negative: "I’m so tired of this crap dude?"
+- Negative: "Trying so hard to be a better partner"
+- Negative: "If one is ugly but doing good in life how can he date?"
+- Negative: "Turning 26 and feels like i haven’t achieved anything…"
+- Negative: "I just want a slice of cake"
+- Negative: "Life is such a total joke."
 - Negative: "Aaj subh walk karne jana tha mujhe"
-- Negative: "I reported my boyfriend and I feel awful"
+- Negative: "I don’t wanna die"
   
 ### MH (Mental Health)
 **Definition**: Mental health discourse (symptoms, coping, support) without SI signals.
@@ -57,23 +57,56 @@ This codebook defines labels for binary (SI vs non-SI) and multiclass (SI, MH, N
 - Positive: "Me when zabardasti ageing and adulting 💔💔"
 - Positive: "My life is a mess and I can’t forgive myself."
 - Positive: "I feel like I need a break, is this shameful?"
-- Negative: "I'm so depressed I don't want to live" → SI
+- Negative: "Im so tired of contantly treated like a child with no speech"
 - Negative: "YLOYD - You laugh or you die"
-- Negative: "Without him I have nobody anymore."
+- Negative: "Why does it feel like no one wants to talk anymore?"
 - Negative: "Chalo utho bhai subah ho gayi, gym/running ka time ho gaya !"
-- Negative: "My mom doesn’t understand me and it’s suffocating"
-- Negative: "I just realized what a creep I've been towards my best friend and I don't know how to cope with myself."
-- Negative: "Nobody's in the office & No work & I'm bored AF"
-- Negative: "I don’t wanna die"
-- Negative: "If death is so common why am I still alive?"
+- Negative: "I don’t ever wanna work with kids again."
+- Negative: "Need opinions, am I crazy or over thinking?"
+- Negative: "I missed my brothers wedding"
+- Negative: "I got in a fight at school 😣"
+- Negative: "My mom caught me and my boyfriend together"
 - Negative: "Why is everyone rude to each other?"
-- Negative: "I'm ruining my life"
+- Negative: "I AM LITERALLY DOING WHAT YOU ASKED"
 
 ### NEU (Neutral)
 **Definition**: Off-topic, no mental health or suicidality signals.
 
+**Examples**:
+- "Feed them and they will never forget"
+- "I feel too old at 22."
+- "How do you socialise and meet people in your 20s?"
+- "Which spoon are you?!"
+- "I am just a girl"
+- "Roommates boyfriend always over"
+- "Why do some people pretend to be busy ?"
+- "amrood ki chutney for lazy days"
+- "How you'll manage this gurlss 😭🎀?"
+- "To all the boys , here's how to get confident in front of girls"
+
 ### HUMOR (Humor/Sarcasm)
 **Definition**: Primary intent is humor; no first-person ideation/intent.
+
+**Examples**:
+- "Me when bro says the nastiest most downright wrong thing"
+- "Gang Masti toh dekhho😶"
+- "Only When You Study The Mood  When he finds out all you needed
+was food to get rid of that attitude"
+- "Vaping is lame"
+- "Enjoy it  when my dad thanks me for
+the birthday gift | got him
+with his own money"
+- "Emergency  When you can't find a socket
+to revive your dead phone:"
+- "I have the power  How teachers feel when
+they stop the class from
+leaving after the bell rang"
+- "Do I look gay?"
+- "I guess I’m old now  When you’re in your 20’s and your back
+hurts:
+
+made with mematic"
+- "It looks like a job for a gorilla"
 
 ## Decision Rules
 - Negation: Mark non-SI if ideation explicitly denied
@@ -88,3 +121,4 @@ This codebook defines labels for binary (SI vs non-SI) and multiclass (SI, MH, N
 
 ## Changelog
 - 2025-10-11: Initial draft
+- 2025-10-12: Fixed SI/MH negative examples with ideation; added NEU and HUMOR examples;
