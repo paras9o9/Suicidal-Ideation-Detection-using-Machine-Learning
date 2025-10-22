@@ -92,15 +92,6 @@ Examples:
 - Third-person: Exclude from SI unless author self-discloses first-person ideation.
 - Uncertainty/hyperbole: If literal ideation isn’t reasonably supported by context, route to adjudication. Prefer SI if first-person agency + death/self-harm desire is indicated.
 
-## Ambiguity and adjudication
-- Route ambiguous posts (hyperbole, sarcasm, unclear agency, code-mixed ambiguity) to adjudication.
-- Maintain an edge-cases log; add resolved examples and rules back to this codebook.
-
-## Agreement targets and pilot
-- Pilot: Two annotators label 150–200 training posts stratified across SI/MH/NEU/HUMOR, blind to prelim labels.
-- Targets: Aim for κ or α ≥ 0.70 before scaling; use a third adjudicator to resolve disagreements.
-- Document: Report agreement, confusion patterns (e.g., SI vs HUMOR), and rule updates.
-
 ## Ethics and safety
 - De-identify content; paraphrase examples to reduce re-identification
 - Provide annotator well-being resources and define escalation for any identifiable imminent-risk content.
