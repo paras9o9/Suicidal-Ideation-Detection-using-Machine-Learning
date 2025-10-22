@@ -26,7 +26,7 @@ Building a machine learning tool to detect suicidal ideation, suicidal plans, su
 ### Background and motivation
 - Briefly explain why suicidal ideation detection is studied (early identification can support triage/intervention), and why social media text is used (timeliness and scale with caution about biases and noise).
   
-- Across text classification tasks for suicidal ideation, modern NLP methods—deep neural networks and transformer-based models—tend to outperform traditional machine learning baselines on in-domain benchmarks, reflecting stronger representation learning and context modeling.
+- Across text classification tasks for suicidal ideation, modern NLP methods such as deep neural networks and transformer-based models tend to outperform traditional machine learning baselines on in-domain benchmarks, reflecting stronger representation learning and context modeling.
 
 - However, performance gains are often coupled with vulnerabilities: dataset and sampling biases, noisy or weak labels, shortcut learning (e.g., subreddit/keywords as proxies), and limited generalization across time, users, and platforms.
 
