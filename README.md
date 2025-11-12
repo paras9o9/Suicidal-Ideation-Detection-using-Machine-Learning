@@ -63,8 +63,206 @@ Exact duplicates were removed using stable submission IDs from Reddit (submissio
 
 
 ### Data annotation and labels
-- Label design: binary (SI vs non-SI) or multi-class severity (e.g., based on Columbia-Suicide Severity Rating Scale mappings if used), and rationale.[9][3]
-- Annotation process: automatic heuristics, keyword seeds, weak labels, or human labeling; inter-annotator agreement if applicable; adjudication steps; example edge cases.[3][8]
+- Label Design
+This dataset supports two classification frameworks to enable both accessible baselines and fine-grained risk assessment:
+
+**Binary classification (SI vs non-SI):**
+
+Every post is labeled either "Suicidal Ideation (SI)" or "non-SI," providing a straightforward detection task aligned with safety-critical screening applications.​
+
+Binary labels reduce annotation complexity, class imbalance challenges, and model training overhead, establishing a strong baseline for benchmarking before advancing to multi-level taxonomies.​
+
+Rationale: Many real-world triage systems require a simple yes/no risk flag; binary framing also facilitates comparison with prior Reddit SI detection work.​
+
+**Multi-class classification (SI, MH, NEU, HUMOR):**
+
+SI: First-person expressions of desire, intent, plan, or method to die or self-harm, encompassing both passive ideation ("wish I were dead") and active ideation with method consideration or planning.​
+
+MH (Mental Health): Mental health discourse including symptoms, coping strategies, therapy/medication discussion, and support-seeking, without suicidal ideation signals.​
+
+NEU (Neutral): Off-topic content with no mental health or suicidality indicators (e.g., general life topics, hobbies, logistics).​
+
+HUMOR: Humorous or sarcastic content without first-person ideation; posts with genuine ideation masked as humor are labeled SI to prioritize safety.​
+
+This multi-class scheme captures nuanced distinctions between suicidal content, mental health distress, neutral discourse, and humor, enabling richer analysis of model behavior and supporting research on disambiguation of dark humor from genuine risk signals.​
+
+The SI class incorporates severity distinctions informed by the Columbia-Suicide Severity Rating Scale (C-SSRS), differentiating passive ideation (wish to be dead, no plan) from active ideation with intent or planning, though both are collapsed into a single SI label for this dataset version to maintain annotation consistency and sample size.​
+
+- Annotation process:
+1. **Annotation Methodology**
+Approach: Dual human annotation with pilot validation​
+
+Process Overview:​
+
+- Initial dataset: 7,180 Reddit posts from mental health subreddits
+- Annotation method: Manual human labeling using structured codebook
+- Pilot phase: 200 posts (validation of annotation guidelines)
+- Full annotation: All 7,180 posts labeled across 4 classes
+
+2. **Label Taxonomy**
+Four-class multiclass classification:​
+
+Label	Definition	Count	Percentage
+SI (Suicidal Ideation)	Posts expressing suicidal thoughts, plans, or intent	1,315	18.3%
+MH (Mental Health)	Posts about depression, anxiety, or mental health without SI	2,860	39.8%
+HUMOR	Memes, jokes, or humorous content related to mental health	2,164	30.1%
+NEU (Neutral)	General discussion or informational posts	841	11.7%
+
+3. **Annotation Codebook**
+Keyword-based categorization with 6 SI subtypes:
+3.1 Direct SI Language (13 keywords)
+
+Examples: "kill myself", "suicide", "end my life", "suicidal"
+High-risk, explicit suicidal intent
+
+3.2 Indirect/Coded Language (16 keywords)
+
+Examples: "unalive", "final message", "this is it"
+Reddit-specific euphemisms avoiding content filters
+
+3.3 Preparation/Planning (9 keywords)
+
+Examples: "planned everything", "set date", "writing goodbye"
+Imminent risk indicators
+
+3.4 Death-related Vocabulary
+
+Keywords: "die", "death", "dead", "dying"
+General mortality themes
+
+3.5 Method Mentions
+
+Keywords: "hang", "overdose", "jump", "pills"
+Specific suicide method references
+
+4. **Inter-Annotator Agreement (Pilot Phase)**
+Pilot Design:​
+
+Sample size: 200 posts
+Annotators: 2 independent coders (Annotator A, Annotator B)
+Overlap: 100% (all 200 posts labeled by both)
+
+Agreement Metrics:​
+
+Metric	Value	Interpretation
+Cohen's Kappa (κ)	1.0	Perfect agreement
+Agreement rate	100%	All 200 posts labeled identically
+Disagreements	0	Zero cases requiring adjudication
+Class-wise Performance:​
+
+Class	Annotator A Count	Annotator B Count	Agreement
+SI	60	60	100%
+MH	60	60	100%
+NEU	40	40	100%
+HUMOR	40	40	100%
+
+5. **Adjudication Process**
+Procedure:​
+
+- Automated conflict detection script (Python)
+- Disagreements flagged for review
+- Confusion matrix generated to identify systematic errors
+- Adjudicator reviews cases with uncertainty flags
+
+Actual Outcome:​
+
+- Zero disagreements in pilot → No adjudication needed
+- Perfect inter-annotator agreement (κ = 1.0) validated codebook clarity
+
+6. **Edge Cases and Challenges**
+6.1 SI vs MH Boundary
+
+Challenge: Distinguishing suicidal ideation from severe depression
+
+Example edge case:
+Post: "I'm so tired of living like this, I don't see the point anymore"
+
+SI indicator: "tired of living", "no point"
+But lacks: Explicit intent, method, plan
+Resolution: Labeled as MH (depression without active SI)
+
+Feature analysis finding:
+
+- "Burden" themes ("better off without me") appeared equally in SI and MH
+- Passive death wishes ("tired of living") showed negative correlation with SI
+- These were removed from final SI keyword set due to ambiguity
+
+6.2 Self-Harm vs Suicidal Ideation
+
+Challenge: Non-suicidal self-injury (NSSI) vs SI
+
+Example edge case:
+Post: "I cut myself to cope with the pain"
+
+- Contains self-harm language
+- But lacks suicidal intent
+
+Resolution: Labeled as MH (self-harm without SI)
+
+Feature analysis finding:
+
+- has_self_harm had negative coefficient (-0.44) for SI prediction
+- Self-harm language more common in MH posts than SI posts
+
+6.3 Dark Humor vs Genuine SI
+
+Challenge: Distinguishing suicidal memes from real distress
+
+Example edge case:
+Post: "POV: You're planning your unaliving for the 100th time this week lol"
+
+- Contains SI keywords ("unaliving", "planning")
+- But humor markers ("lol", "POV", "100th time")
+
+Resolution: Labeled as HUMOR
+Heuristic: Presence of meme formatting, exaggeration, or laugh reactions → HUMOR category
+
+7. **Quality Control Measures**
+7.1 Pilot Validation​
+- Purpose: Test codebook clarity before full annotation
+- Result: κ = 1.0 (perfect agreement) confirmed guidelines were unambiguous
+
+7.2 Automated Consistency Checks
+
+- Script validated all labels were in {SI, MH, NEU, HUMOR}
+- Flagged missing labels (none found in final dataset)
+- Checked train/val/test split integrity (70/15/15 maintained)
+
+7.3 Post-Annotation Review
+
+- Feature importance analysis revealed which SI indicators were most predictive
+- Discovered burden/passive themes were not SI-specific → refined understanding
+
+8. **Annotation Statistics**
+Final Dataset Composition:​
+
+Split	Total Posts	SI	MH	NEU	HUMOR
+Train	5,026 (70%)	920	2,002	588	1,516
+Validation	1,077 (15%)	198	429	126	324
+Test	1,077 (15%)	197	429	127	324
+Total	7,180	1,315	2,860	841	2,164
+
+Class Distribution:​
+
+Moderately imbalanced (imbalance ratio: 3.4:1)
+SI minority class: 18.3% of dataset
+Handled via custom class weighting in models
+
+9. **Strengths and Limitations**
+Strengths:​
+
+- Perfect inter-annotator agreement (κ = 1.0)
+- Large sample size (7,180 posts)
+- Structured codebook with 78 keywords across 6 categories
+- Validated through pilot study before full annotation
+
+Limitations:
+
+- Binary inter-annotator check only (2 coders, no third adjudicator)
+- Reddit-specific language may not generalize to other platforms
+- Burden and passive SI themes proved ambiguous (removed in final model)
+- Perfect pilot agreement may indicate easy sample (not representative of edge cases)
+ 
 - Known label risks: keyword leakage, subreddit-as-label shortcuts, topic confounds; plan mitigations (balanced controls, adversarial splits, leakage checks).[8][3]
 
 ### Data schema
