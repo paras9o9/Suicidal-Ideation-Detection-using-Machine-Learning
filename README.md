@@ -264,9 +264,29 @@ Limitations:
 - Perfect pilot agreement may indicate easy sample (not representative of edge cases)
  
 ### Data schema
-- Provide a precise field dictionary for each JSON/CSV row:  
-  - id, platform, subreddit/community, created_utc, author_id (hashed), post_text, title, ocr_text, media_flags, language, label, prelim_label, source_split, char_len, token_len, toxicity/lexicon scores (if computed), and collection_date.[1][8]
-- Include units, allowed values, and nullability for each field, plus versioned schema changes.[1][8]
+| Field Name           | Type    | Description                        | Allowed Values / Format                  | Nullable | Notes                     |
+| -------------------- | ------- | ---------------------------------- | ---------------------------------------- | -------- | ------------------------- |
+| id                   | String  | Unique Reddit post identifier      | Alphanumeric (e.g., "1nbav77")           | No       | Primary key               |
+| major_category       | String  | Primary classification label       | "SI", "NON_SI"                           | No       | Target variable           |
+| subcategory          | String  | Granular classification            | "SI_Direct", "NonSI_Uncategorized", etc. | Yes      | Multi-level labels        |
+| subreddit            | String  | Reddit community name              | Alphanumeric without "r/" prefix         | No       | Platform/community field  |
+| title                | String  | Post title text                    | UTF-8 text                               | No       | May contain special chars |
+| combined_text        | String  | Title + body concatenated          | UTF-8 text                               | No       | Primary NLP field         |
+| combined_text_length | Integer | Character count                    | >= 0                                     | No       | Equivalent to char_len    |
+| word_count           | Integer | Word/token count                   | >= 0                                     | No       | Equivalent to token_len   |
+| created_utc          | Integer | Post creation timestamp            | Unix epoch (seconds)                     | No       | Convert to datetime       |
+| score                | Integer | Reddit score (upvotes - downvotes) | Any integer                              | No       | Engagement metric         |
+| num_comments         | Integer | Number of comments                 | >= 0                                     | No       | Engagement metric         |
+| had_image            | Boolean | Image attachment flag              | TRUE, FALSE                              | No       | Media flag component      |
+| has_body_text        | Boolean | Body text present flag             | TRUE, FALSE                              | No       | Differentiates title-only |
+| has_meme_text        | Boolean | OCR text extracted flag            | TRUE, FALSE                              | No       | OCR indicator             |
+| prelim_label         | String  | Automated pre-label                | "SI", "NON_SI", "UNKNOWN"                | Yes      | Pre-annotation filter     |
+| si_confidence        | Float   | SI classification confidence       | 0.0 to 1.0                               | Yes      | Currently unpopulated     |
+| url                  | String  | Reddit permalink                   | https://www.reddit.com/...               | No       | Audit trail               |
+| collection_mode      | String  | Collection method                  | "api", "scrape", "manual"                | Yes      | Currently empty           |
+| collection_date      | String  | Data collection timestamp          | YYYY-MM-DD                               | No       | Distinct from post date   |
+| source_file          | String  | Raw JSON source path               | Absolute file path                       | Yes      | Traceability              |
+| post_date            | String  | Human-readable post date           | "YYYY-MM-DD HH:MM:SS"                    | No       | Derived from created_utc  |
 
 ### Preprocessing and normalization
 - Text cleaning: URL/user/emoji handling, lowercasing policy, punctuation, whitespace, stopwords, and preservation of negations.[8]
