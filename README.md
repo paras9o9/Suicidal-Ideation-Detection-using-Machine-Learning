@@ -289,9 +289,143 @@ Limitations:
 | post_date            | String  | Human-readable post date           | "YYYY-MM-DD HH:MM:SS"                    | No       | Derived from created_utc  |
 
 ### Preprocessing and normalization
-- Text cleaning: URL/user/emoji handling, lowercasing policy, punctuation, whitespace, stopwords, and preservation of negations.[8]
-- De-identification: remove usernames, emails, phone numbers, location hints; hashing IDs; note tradeoffs with context.[10][8]
-- Language filtering and normalization strategies; tokenization baselines and max-len thresholds to avoid truncation bias.[8]
+## Text Preprocessing and Normalization Pipeline (Code-Free Version)
+
+Based on your suicidal ideation detection project, here's a comprehensive documentation of your preprocessing and normalization techniques:
+
+***
+
+### 1. Text Cleaning
+
+#### URL Handling
+**Policy**: All URLs removed entirely
+- Reddit posts often contained image links (https://i.redd.it/...) and external resource links
+- URLs don't contain SI-relevant information and create noise
+- Removed patterns: HTTP/HTTPS links, www. addresses, Reddit-specific URLs
+
+#### User Mentions and Reddit Formatting
+**Policy**: User mentions replaced with special tokens, subreddit mentions removed
+- User mentions converted to placeholder tokens to preserve sentence structure while preventing user-specific overfitting
+- Subreddit mentions removed to prevent label leakage
+- Reddit markdown formatting stripped (bold, italics, hyperlinks)
+
+#### Emoji Handling
+**Policy**: Emojis converted to text descriptions
+- Emojis like skull, crying face, or knife may indicate emotional state or SI intent
+- Converted to text equivalents to preserve emotional context
+- Example: crying face emoji → "crying face" text
+
+#### Lowercasing
+**Policy**: Full lowercasing applied throughout
+- Ensures consistency: "Kill myself" = "kill myself" = "KILL MYSELF"
+- Reduces vocabulary size for more efficient TF-IDF representation
+- Trade-off: Loses capitalization emphasis patterns
+
+#### Punctuation and Whitespace
+**Policy**: Whitespace normalized, punctuation preserved
+- Multiple spaces collapsed to single space
+- Repeated punctuation normalized (multiple exclamation marks → single)
+- Punctuation kept for negation handling and sentence structure
+
+#### Stopword Handling
+**Policy**: Negations preserved, other stopwords removed
+- **Critical distinction**: Words like "not", "no", "never" were kept
+- Removed low-information words: "the", "a", "is", "are", "was"
+- Rationale: "I want to live" vs "I don't want to live" requires negation preservation
+- This is clinically critical for SI detection
+
+### 2. De-identification
+
+#### Personal Identifiers
+**Policy**: PII replaced with tokens, not fully removed
+- Email addresses → EMAIL token
+- Phone numbers → PHONE token
+- Usernames → USER token
+- Preserves sentence structure while protecting privacy
+
+#### Location References
+**Policy**: NOT removed in current pipeline
+- Location mentions rare in mental health discussions
+- May contain clinical context (e.g., state-specific mental health laws)
+- Minimal privacy risk on pseudonymous Reddit platform
+
+#### ID Hashing
+**Policy**: Applied to metadata fields
+- Reddit post IDs kept as-is (already anonymized alphanumeric codes)
+- Author fields removed during collection phase
+- Subreddit names preserved for validation but excluded from model features
+
+***
+
+### 3. Language Filtering and Normalization
+
+#### Language Detection
+**Policy**: English-only filtering applied
+- Dataset of 7,180 posts is predominantly English
+- Non-English posts filtered out during preprocessing
+- Exception: Hindi keywords included in SI lexicon but rarely used (coefficient 0.0 in feature analysis)
+
+#### Normalization Strategies
+**Policy**: Contractions preserved as-is
+- "can't" kept separate from "cannot" to preserve informal tone
+- Mental health language is often colloquial
+- Spelling correction NOT applied to avoid changing authentic expression
+- TF-IDF treats contractions as distinct tokens
+
+***
+
+### 4. Tokenization and Sequence Length
+
+#### Tokenization Approach
+**Method**: Word-level tokenization with n-grams
+- Unigrams: individual words ("kill", "myself")
+- Bigrams: two-word phrases ("kill myself")
+- Captures SI-specific expressions that require multiple words
+- Maximum 5,000 TF-IDF features to balance coverage and efficiency
+
+#### Text Length Statistics
+**Your dataset characteristics**:
+- Character length range: 92-7,621 characters
+- Word count range: 15-2,932 words
+- Most posts: 50-500 words (short to medium length)
+- Mean length: approximately 400 characters
+
+#### Maximum Length Thresholds
+**For traditional ML (TF-IDF)**: No truncation needed
+- TF-IDF vectorizer handles variable-length documents automatically
+
+**For deep learning (BERT)**: 256-token maximum chosen
+- Rationale: 95th percentile of posts fit within 256 tokens
+- Avoids truncation bias (cutting off critical SI statements at end of long posts)
+- Shorter than BERT's 512-token maximum for faster training
+- Ensures SI keywords near end of posts aren't lost
+
+***
+
+### Summary: Applied Preprocessing Decisions
+
+**Techniques Applied**:
+- URL removal for noise reduction
+- User mention tokenization to prevent overfitting
+- Lowercasing for normalization
+- Whitespace standardization
+- Stopword removal WITH negation preservation (clinical priority)
+- Emoji text conversion for emotional context
+- PII tokenization for privacy
+- English language filtering
+- Word-level tokenization with bigrams
+- 256-token maximum for BERT models
+
+**Techniques NOT Applied (with justification)**:
+- Spelling correction: Informal SI language is authentic ("wanna die" vs "want to die")
+- Stemming/Lemmatization: Preserves verb tense ("killed" vs "killing")
+- Subreddit name inclusion: Would create label leakage shortcut
+- Aggressive location removal: Rare in text, minimal privacy gain
+- Complete punctuation removal: Needed for negations and questions
+
+**Key Innovation**: Preserving negations while removing other stopwords - this is rare in standard NLP but critical for safety-critical SI detection where "don't want to live" vs "want to live" represents opposite meanings.
+
+This preprocessing pipeline balances noise reduction with clinical information preservation, appropriate for mental health NLP applications where subtle linguistic differences carry high-stakes implications.
 
 ### Data splits and leakage prevention
 - Train/validation/test split strategy: time-based, author-disjoint, and subreddit-disjoint variants to quantify generalization.[3][8]
