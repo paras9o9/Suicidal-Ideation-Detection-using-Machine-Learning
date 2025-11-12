@@ -263,8 +263,6 @@ Limitations:
 - Burden and passive SI themes proved ambiguous (removed in final model)
 - Perfect pilot agreement may indicate easy sample (not representative of edge cases)
  
-- Known label risks: keyword leakage, subreddit-as-label shortcuts, topic confounds; plan mitigations (balanced controls, adversarial splits, leakage checks).[8][3]
-
 ### Data schema
 - Provide a precise field dictionary for each JSON/CSV row:  
   - id, platform, subreddit/community, created_utc, author_id (hashed), post_text, title, ocr_text, media_flags, language, label, prelim_label, source_split, char_len, token_len, toxicity/lexicon scores (if computed), and collection_date.[1][8]
