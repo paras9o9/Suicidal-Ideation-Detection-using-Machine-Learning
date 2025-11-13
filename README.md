@@ -516,22 +516,220 @@ All entries are top-level posts, not comments
 
 Leakage prevented: No thread contamination
 
-### Bias, safety, and ethical considerations
-- Risks: demographic bias, subreddit/topic confounds, performative language, and self-harm contagion concerns when exposing examples.[10][8]
-- Mitigations: de-identification, sensitive content access controls, filtered example sharing, ethics review or advisory, and clear non-clinical use notice.[10][8]
-- Harm-minimizing documentation: crisis resources note, annotation safety protocol, and usage terms requiring caution.[10][8]
-
-### Licensing and access
-- Data licensing summary: platform TOS compliance, redistribution stance (metadata vs raw text), and how to request controlled access if needed.[1][8]
-- Derivative work policy: restrictions for commercial/clinical use and requirement to cite the dataset documentation.[8][10]
-
 ### Baseline tasks and evaluation
 - Tasks: binary SI detection; optionally multi-level severity classification; domain transfer between subreddits/platforms.[9][8]
 - Metrics: precision, recall, F1 (macro), ROC-AUC, PR-AUC; report per-class and macro to handle imbalance; include calibration assessment.[3][8]
 - Splits to test: in-domain vs cross-domain; author-disjoint to avoid memorization; time-split to assess drift.[3][8]
 
 ### Baseline models
-- Traditional ML: TF-IDF or n-grams with linear SVM/LogReg, plus feature ablations and leakage checks.[8]
+## Baseline Models: Traditional ML Implementation
+
+### 1. Text Representation: TF-IDF with N-grams
+
+**Feature extraction method**: Term Frequency-Inverse Document Frequency (TF-IDF)
+
+**Configuration**:
+- Maximum features: 5,000 terms
+- N-gram range: Unigrams and bigrams (1-2)
+- Minimum document frequency: 2 (ignore terms appearing in fewer than 2 documents)
+- Maximum document frequency: 0.95 (ignore terms appearing in >95% of documents)
+- Lowercasing: Applied
+- Stop words: Custom list (removed common words but preserved negations like "not", "never")
+
+**Rationale for settings**:
+- 5,000 features balances vocabulary coverage with computational efficiency
+- Bigrams capture SI-specific phrases like "kill myself" and "end my life"
+- Min/max document frequency filters remove both rare noise and overly common terms
+- Negation preservation critical for mental health: "want to live" vs "don't want to live"
+
+**Output**: 5,026 × 5,000 sparse matrix for training set
+
+### 2. Baseline Model 1: Logistic Regression
+
+**Model architecture**: Multinomial Logistic Regression with balanced class weights
+
+**Hyperparameters**:
+- Solver: lbfgs (limited-memory BFGS)
+- Maximum iterations: 1,000
+- Class weight: balanced (automatically adjusts for class imbalance)
+- Random state: 42
+- Multi-class strategy: One-vs-rest
+
+**Performance (LR v1 - TF-IDF only)**:
+- Overall accuracy: 59.1%
+- SI recall: 62.6% (124/198 detected)
+- SI precision: 53.7%
+- SI F1: 0.578
+
+**Why Logistic Regression as baseline**:
+- Fast training and inference
+- Interpretable coefficients show which words predict SI
+- Industry standard for text classification
+- Handles sparse high-dimensional TF-IDF features well
+
+### 3. Baseline Model 2: Linear Support Vector Machine (LinearSVC)
+
+**Model architecture**: Linear kernel SVM with balanced class weights
+
+**Hyperparameters**:
+- Penalty: L2 regularization
+- Loss: Squared hinge loss
+- Class weight: balanced
+- Maximum iterations: 5,000
+- Random state: 42
+- Dual formulation: False (faster for large feature sets)
+
+**Performance (LinearSVC)**:
+- Overall accuracy: 60.5%
+- SI recall: 56.6% (112/198 detected)
+- SI precision: 58.3%
+- SI F1: 0.574
+
+**Key finding**: LinearSVC underperformed Logistic Regression
+- SVM detected 8 fewer SI cases than LR baseline (112 vs 120)
+- Linear kernel may not capture complex SI language patterns
+- **Conclusion**: Logistic Regression superior for this task
+
+### 4. Baseline Model 3: Random Forest (Exploratory)
+
+**Model architecture**: Ensemble of decision trees
+
+**Hyperparameters**:
+- Number of estimators: 100 trees
+- Maximum depth: 20
+- Class weight: balanced
+- Random state: 42
+
+**Performance (Random Forest)**:
+- Overall accuracy: 55.3% (worst performing)
+- SI recall: 49.0% (only 97/198 detected)
+- SI precision: 57.4%
+- SI F1: 0.529
+
+**Why Random Forest failed**:
+- Decision trees struggle with sparse high-dimensional TF-IDF features
+- Requires dense feature representations
+- Overfitting to training data despite balanced weighting
+- **Conclusion**: Not suitable for bag-of-words text classification
+
+### 5. Feature Ablation Studies
+
+#### Ablation 1: TF-IDF Only vs TF-IDF + SI Keywords
+
+**Purpose**: Test if explicit SI keyword features improve beyond TF-IDF
+
+**Setup**:
+- LR v1: TF-IDF features only (5,000 features)
+- LR v2: TF-IDF + 18 engineered SI keyword features (5,018 features total)
+
+**SI Keyword features added**:
+- Direct SI counts: "kill myself", "suicide", "end my life"
+- Indirect counts: "unalive", "final message"
+- Preparation indicators: "planned everything", "writing goodbye"
+- Death-related terms: "die", "death", "dying"
+- Method mentions: "hang", "overdose", "pills"
+- Binary flags: has_direct, has_indirect, has_preparation, etc.
+
+**Results comparison**:
+
+| Model | Accuracy | SI Recall | SI Precision | SI F1 |
+|-------|----------|-----------|--------------|-------|
+| LR v1 (TF-IDF only) | 59.1% | 62.6% | 53.7% | 0.578 |
+| LR v2 (TF-IDF + keywords) | 60.8% | 60.6% | 61.5% | 0.611 |
+
+**Key finding**: Keywords improved precision (+7.8%) but decreased recall (-2.0%)
+- Trade-off suggests TF-IDF already captures most SI keywords
+- Explicit features helped distinguish true SI from general mental health discussion
+- Minimal leakage: keywords didn't create shortcut learning
+
+#### Ablation 2: Removing Harmful Features
+
+**Purpose**: Test impact of features with negative correlation to SI
+
+**Features identified as harmful through coefficient analysis**:
+- has_self_harm: -0.437 (negative predictor)
+- burden_count: -0.288
+- passive_count: -0.153
+- hindi_count: 0.0 (no effect)
+
+**Setup**:
+- LR v3: Removed 6 low/negative-weight features from v2
+
+**Result**: Performance identical to v2 (0.611 F1)
+- Confirms TF-IDF dominates 5,000-dimensional feature space
+- Weak keyword features (6 out of 5,018) had negligible impact
+- **Insight**: Self-harm language distinct from SI language in Reddit data
+
+### 6. Leakage Checks Performed
+
+#### Check 1: Subreddit Name Exclusion
+
+**Risk**: Model learns "if subreddit == SuicideWatch then SI"
+
+**Mitigation**: Subreddit metadata field excluded from all models
+
+**Validation test**: Trained model with and without subreddit feature
+- Expected result: Major performance drop if model relied on shortcut
+- Actual result: Performance unchanged (confirming no subreddit leakage)
+
+#### Check 2: Keyword Overlap with Labels
+
+**Risk**: SI labels based on presence of specific keywords
+
+**Analysis**: Compared keyword presence in training vs test sets
+- SI keywords (e.g., "kill myself") appear in 78% of SI-labeled posts
+- But also appear in 15% of HUMOR posts (dark jokes)
+- Model learns context, not just keyword presence
+
+**Validation**: TF-IDF-only baseline (no explicit keywords) achieved competitive 59.1% accuracy
+- Proves model doesn't solely rely on keyword shortcuts
+
+#### Check 3: Cross-validation Consistency
+
+**Method**: 5-fold cross-validation on training set
+
+**Purpose**: Ensure stable performance across different data splits
+
+**Results**: 
+- Mean SI F1: 0.60 ± 0.03
+- Low variance indicates robust learning, not overfitting to specific examples
+
+### 7. Hyperparameter Tuning: Class Weight Optimization
+
+**Problem**: Class imbalance (SI = 18.3% of data) causes low recall
+
+**Approach**: Systematic class weight tuning for Logistic Regression
+
+**Configurations tested**:
+
+| Config | SI Weight | SI Recall | SI Precision | SI F1 | Detected |
+|--------|-----------|-----------|--------------|-------|----------|
+| v2 (balanced) | 2.2 | 60.6% | 61.5% | 0.611 | 120/198 |
+| v4 | 3.0 | 67.2% | 51.0% | 0.580 | 133/198 |
+| v5a | 3.5 | 69.2% | 47.6% | 0.564 | 137/198 |
+| v5b | 4.0 | 74.2% | 45.2% | 0.562 | 147/198 |
+| v5c | 4.5 | 77.3% | 44.1% | 0.561 | 153/198 |
+| v5d | 5.0 | 78.3% | 43.1% | 0.556 | 155/198 |
+
+**Optimal choice for thesis**: Weight = 4.0
+- Sweet spot: 74.2% recall with acceptable 45.2% precision
+- Detected 27 more SI cases than balanced model (147 vs 120)
+- Diminishing returns beyond weight 4.0
+
+**Clinical rationale**: For safety-critical SI detection, recall > precision
+- Missing suicidal person (false negative) worse than false alarm (false positive)
+- 74.2% recall reduces missed cases by 38% vs balanced model
+
+### 8. Final Traditional ML Model Comparison
+
+| Model | Accuracy | SI Recall | SI Precision | SI F1 | Best For |
+|-------|----------|-----------|--------------|-------|----------|
+| **LR (weight=4.0)** | ~62% | **74.2%** | 45.2% | 0.562 | **Deployment (safety)** |
+| **LR balanced (v2)** | 60.8% | 60.6% | 61.5% | **0.611** | **Research (F1 balance)** |
+| LR baseline (v1) | 59.1% | 62.6% | 53.7% | 0.578 | Baseline comparison |
+| LinearSVC | 60.5% | 56.6% | 58.3% | 0.574 | Failed experiment |
+| Random Forest | 55.3% | 49.0% | 57.4% | 0.529 | Failed experiment |
+
 - Deep learning: CNN/LSTM/C-LSTM baselines; note sequence length, pretrained embeddings, and regularization.[8]
 - Transformers: fine-tune BERT/RoBERTa/ELECTRA and domain-adapt if necessary; report strong baselines but discuss label reliability and shortcut learning risks.[5][3]
 
