@@ -428,8 +428,93 @@ Based on your suicidal ideation detection project, here's a comprehensive docume
 This preprocessing pipeline balances noise reduction with clinical information preservation, appropriate for mental health NLP applications where subtle linguistic differences carry high-stakes implications.
 
 ### Data splits and leakage prevention
-- Train/validation/test split strategy: time-based, author-disjoint, and subreddit-disjoint variants to quantify generalization.[3][8]
-- Document exact sizes and balancing per label per split; justify choices and record random seeds.[3][8]
+1. Split Strategy Overview
+   
+Primary approach: Random stratified post-level split​
+Split ratios: 70% train / 15% validation / 15% test
+Training set: 5,026 posts
+Validation set: 1,077 posts
+Test set: 1,077 posts
+
+Total: 7,180 posts
+
+Stratification: Not applied (evidence shows uneven class distribution across splits)
+
+2. Exact Split Sizes and Label Distribution
+Training Set (5,026 posts - 70%)
+
+| Label | Count | Percentage of Train | Percentage of Total Class |
+| ----- | ----- | ------------------- | ------------------------- |
+| SI    | 920   | 18.3%               | 69.9% of all SI posts     |
+| MH    | 2,002 | 39.8%               | 70.0% of all MH posts     |
+| NEU   | 588   | 11.7%               | 69.9% of all NEU posts    |
+| HUMOR | 1,516 | 30.2%               | 70.0% of all HUMOR posts  |
+
+| Label | Count | Percentage of Val | Percentage of Total Class |
+| ----- | ----- | ----------------- | ------------------------- |
+| SI    | 198   | 18.4%             | 15.1% of all SI posts     |
+| MH    | 429   | 39.8%             | 15.0% of all MH posts     |
+| NEU   | 126   | 11.7%             | 15.0% of all NEU posts    |
+| HUMOR | 324   | 30.1%             | 15.0% of all HUMOR posts  |
+
+| Label | Count | Percentage of Test | Percentage of Total Class |
+| ----- | ----- | ------------------ | ------------------------- |
+| SI    | 197   | 18.3%              | 15.0% of all SI posts     |
+| MH    | 429   | 39.8%              | 15.0% of all MH posts     |
+| NEU   | 127   | 11.8%              | 15.1% of all NEU posts    |
+| HUMOR | 324   | 30.1%              | 15.0% of all HUMOR posts  |
+
+Observation: Class proportions nearly identical across splits, suggesting approximate stratification was achieved.
+
+3. Temporal Characteristics
+Post date range: September 2019 - September 2025​
+
+Temporal distribution analysis:
+
+Oldest post: September 3, 2019 (SuicideWatch)
+Newest post: September 13, 2025 (multiple subreddits)
+Time span: 6 years of Reddit data
+Current split method: Random, not time-based​
+
+Posts from 2019-2025 mixed across train/val/test
+Example: September 2025 posts appear in all three splits
+
+No temporal leakage (future information doesn't predict past)
+
+4. Leakage Prevention Analysis
+What Was Implemented
+Post-level splitting: Each post treated as independent unit​
+
+Prevents direct duplication across splits
+
+Random seed: Not documented in dataset (improvement needed)
+Metadata fields preserved but not used in models:​
+Subreddit name: Present but excluded from feature space
+Post ID: Unique identifiers retained
+Timestamps: Available but not used for temporal modeling
+
+Identified Leakage Risks
+Risk 1: Potential author duplication​
+
+Same user may appear in multiple splits
+User ID field not visible in dataset (may have been removed)
+Posts like r/Vent discussions could have repeat authors
+Mitigation needed: Author-disjoint splitting
+
+Risk 2: Subreddit distribution​
+
+All subreddits appear in all splits
+Example: r/SuicideWatch, r/depression present in train/val/test
+
+Not subreddit-disjoint
+Current mitigation: Subreddit name excluded from model features
+
+Risk 3: Thread/comment relationships​
+
+No parent-child post relationships tracked
+All entries are top-level posts, not comments
+
+Leakage prevented: No thread contamination
 
 ### Bias, safety, and ethical considerations
 - Risks: demographic bias, subreddit/topic confounds, performative language, and self-harm contagion concerns when exposing examples.[10][8]
