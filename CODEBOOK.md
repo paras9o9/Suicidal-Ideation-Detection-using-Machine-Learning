@@ -33,19 +33,19 @@ This codebook defines labels for binary (SI vs non-SI) and multiclass (SI, MH, N
 - **Historical recovery:** "I attempted suicide 5 years ago but I'm better now" → Label as MH.
 
 **Examples:**
-- ✅ SI: "I keep thinking about taking all my pills."
-- ✅ SI: "I'm constantly postponing my inevitable suicide."
-- ✅ SI: "I want to end it so badly, give me a reason not to."
-- ✅ SI: "How painful really is hanging yourself?" (self-referential/consideration)
-- ✅ SI: "I'm thinking about killing myself again."
-- ✅ SI: "I just tried to kill myself…"
-- ✅ SI: "If I don't pass this exam, I'm done." (conditional threat)
-- ✅ SI: "I hope I don't wake up tomorrow." (passive ideation)
-- ✅ SI: "I cut myself last night to feel something." (NSSI)
-- ❌ NOT SI (→ MH): "I used to be suicidal but I'm okay now." (past tense, recovery)
-- ❌ NOT SI (→ MH): "I don't wanna die." (explicit denial with distress)
-- ❌ NOT SI (→ MH/NEU): "I'm so tired of this crap, dude?" (no ideation)
-- ❌ NOT SI (→ NEU): "Aaj subh walk karne jana tha mujhe." (neutral statement)
+- SI: "I keep thinking about taking all my pills."
+- SI: "I'm constantly postponing my inevitable suicide."
+- SI: "I want to end it so badly, give me a reason not to."
+- SI: "How painful really is hanging yourself?" (self-referential/consideration)
+- SI: "I'm thinking about killing myself again."
+- SI: "I just tried to kill myself…"
+- SI: "If I don't pass this exam, I'm done." (conditional threat)
+- SI: "I hope I don't wake up tomorrow." (passive ideation)
+- SI: "I cut myself last night to feel something." (NSSI)
+- NOT SI (→ MH): "I used to be suicidal but I'm okay now." (past tense, recovery)
+- NOT SI (→ MH): "I don't wanna die." (explicit denial with distress)
+- NOT SI (→ MH/NEU): "I'm so tired of this crap, dude?" (no ideation)
+- NOT SI (→ NEU): "Aaj subh walk karne jana tha mujhe." (neutral statement)
 
 **Notes:**
 - **Hyperbole/sarcasm:** If a phrase like "I want to die" is likely figurative (e.g., "I want to die, this exam is so hard") and lacks self-harm/agency context, route to adjudication. Prefer SI only if first-person agency + death/self-harm desire is reasonably indicated.
@@ -66,15 +66,15 @@ This codebook defines labels for binary (SI vs non-SI) and multiclass (SI, MH, N
 - Neutral off-topic content → Move to NEU.
 
 **Examples:**
-- ✅ MH: "Started therapy for my panic attacks."
-- ✅ MH: "This has been the worst year of my life."
-- ✅ MH: "I'm so miserable and I need a break; is this shameful?"
-- ✅ MH: "My life is a mess and I can't forgive myself."
-- ✅ MH: "I don't wanna die but I feel hopeless." (denial + distress)
-- ✅ MH: "I attempted suicide 5 years ago but I'm in a better place now." (historical, recovery)
-- ❌ NOT MH (→ HUMOR): "YLOYD – You laugh or you die." (comedic, no genuine distress)
-- ❌ NOT MH (→ NEU): "I AM LITERALLY DOING WHAT YOU ASKED." (no MH/SI content)
-- ❌ NOT MH (→ SI): "Money ruined my life, I need to die." (ideation present)
+- MH: "Started therapy for my panic attacks."
+- MH: "This has been the worst year of my life."
+- MH: "I'm so miserable and I need a break; is this shameful?"
+- MH: "My life is a mess and I can't forgive myself."
+- MH: "I don't wanna die but I feel hopeless." (denial + distress)
+- MH: "I attempted suicide 5 years ago but I'm in a better place now." (historical, recovery)
+- NOT MH (→ HUMOR): "YLOYD – You laugh or you die." (comedic, no genuine distress)
+- NOT MH (→ NEU): "I AM LITERALLY DOING WHAT YOU ASKED." (no MH/SI content)
+- NOT MH (→ SI): "Money ruined my life, I need to die." (ideation present)
 
 ---
 
@@ -90,11 +90,11 @@ This codebook defines labels for binary (SI vs non-SI) and multiclass (SI, MH, N
 - Humorous intent → Move to HUMOR.
 
 **Examples:**
-- ✅ NEU: "Which spoon are you?!"
-- ✅ NEU: "amrood ki chutney for lazy days."
-- ✅ NEU: "To all the boys, how to get confident in front of girls?"
-- ✅ NEU: "Movie review and weekend plans."
-- ✅ NEU: "Best budget laptop for coding?"
+- NEU: "Which spoon are you?!"
+- NEU: "amrood ki chutney for lazy days."
+- NEU: "To all the boys, how to get confident in front of girls?"
+- NEU: "Movie review and weekend plans."
+- NEU: "Best budget laptop for coding?"
 
 ---
 
@@ -109,16 +109,16 @@ This codebook defines labels for binary (SI vs non-SI) and multiclass (SI, MH, N
 - If there is first-person ideation → Label SI even if humorous or dark.
 
 **Examples:**
-- ✅ HUMOR: "When you're in your 20s and your back hurts: [meme]."
-- ✅ HUMOR: "Enjoy it when my dad thanks me for the gift I got him with his money."
-- ✅ HUMOR: "Vaping is lame."
-- ✅ HUMOR: "I want to die... of laughter watching this show."
-- ❌ NOT HUMOR (→ MH): "Life is such a total joke." (if distress context; otherwise NEU)
-- ❌ NOT HUMOR (→ SI): "Jokingly, I keep thinking about ending it all." (ideation present despite humor framing)
+- HUMOR: "When you're in your 20s and your back hurts: [meme]."
+- HUMOR: "Enjoy it when my dad thanks me for the gift I got him with his money."
+- HUMOR: "Vaping is lame."
+- HUMOR: "I want to die... of laughter watching this show."
+- NOT HUMOR (→ MH): "Life is such a total joke." (if distress context; otherwise NEU)
+- NOT HUMOR (→ SI): "Jokingly, I keep thinking about ending it all." (ideation present despite humor framing)
 
 ---
 
-## ⚡ Edge Case Protocols
+## Edge Case Protocols
 
 ### 1. Non-Suicidal Self-Injury (NSSI)
 - **Rule:** Label as **SI**.
