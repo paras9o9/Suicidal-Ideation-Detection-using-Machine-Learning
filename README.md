@@ -642,7 +642,7 @@ Multi-class analysis revealed the hardest challenge is distinguishing **Suicidal
 *   **Critical Misses:** ~14% of SI cases were misclassified as "Mental Health" (Depression).
 *   **Clinical Insight:** Linguistic patterns for *hopelessness* (Depression) and *intent* (Suicide) are highly overlapping, suggesting future work requires intent-specific feature engineering.
 
-## 🛡️ Robustness & Generalization Analysis
+## Robustness & Generalization Analysis
 
 To ensure our model learns genuine suicidal ideation signals rather than platform-specific artifacts, we subjected it to a series of stress tests and domain adaptation challenges.
 
@@ -713,12 +713,12 @@ By analyzing the top weighted features across the entire dataset, we identified 
     *   *Risk:* This creates a **False Reassurance** bias, where a student discussing exam stress alongside suicidal thoughts might be classified as "Safe" simply because they mentioned schoolwork.
     *   *Mitigation:* We manually penalized these safe-bias features to force the model to look for emotional markers (hopelessness, entrapment) rather than topic markers.
 
-### ⚠️ Clinical Warning: The Risk of False Reassurance
+### Clinical Warning: The Risk of False Reassurance
 Explainability tools like SHAP and LIME provide *mathematical* explanations, not *clinical* justifications.
 
 *   **Limitation:** A high "safety" score from the model does not guarantee a patient is safe; it only means the text lacks the specific linguistic patterns the model learned.
 *   **Ethical Guardrail:** In any deployment, a "Low Risk" prediction must be presented with the disclaimer: *"Absence of detected keywords does not confirm safety. Clinical judgment is required."*
-## 🔍 Explainability & Interpretability
+## Explainability & Interpretability
 
 To mitigate the "black box" risk in clinical AI, we audited our models using **LIME (Local Interpretable Model-agnostic Explanations)** and coefficient analysis. This ensures the model's high accuracy is based on valid psychological signals, not spurious shortcuts.
 
@@ -749,7 +749,7 @@ By analyzing the top weighted features across the entire dataset, we identified 
     *   *Risk:* This creates a **False Reassurance** bias, where a student discussing exam stress alongside suicidal thoughts might be classified as "Safe" simply because they mentioned schoolwork.
     *   *Mitigation:* We manually penalized these safe-bias features to force the model to look for emotional markers (hopelessness, entrapment) rather than topic markers.
 
-### ⚠️ Clinical Warning: The Risk of False Reassurance
+### Clinical Warning: The Risk of False Reassurance
 Explainability tools like SHAP and LIME provide *mathematical* explanations, not *clinical* justifications.
 
 *   **Limitation:** A high "safety" score from the model does not guarantee a patient is safe; it only means the text lacks the specific linguistic patterns the model learned.
@@ -792,7 +792,7 @@ Every training run is automatically logged with the following metadata:
 **Access for Reviewers:**
 The exact code and frozen dataset sample (de-identified) are available in the `reproduction/` directory of the attached repository.
 
-## ⚠️ Known Limitations & Risks
+## Known Limitations & Risks
 
 While our model achieves high accuracy on benchmark data, it operates within strict constraints that must be understood before any potential application.
 
@@ -816,7 +816,7 @@ While our model achieves high accuracy on benchmark data, it operates within str
 *   **No Clinical Diagnosis:** This tool is a **screening aid**, not a diagnostic device. It generates a probabilistic risk score based on text patterns, which is **not** equivalent to a clinical assessment of intent.
 *   **False Negatives:** The model cannot detect what is not written. A user who is highly suicidal but posts only about "feeling tired" will be missed (False Negative).
 
-## 📚 Citation & Acknowledgments
+## Citation & Acknowledgments
 
 ### Citing this Project
 If you use this code, dataset, or annotation guidelines in your research, please cite the following:
