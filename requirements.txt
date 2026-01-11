@@ -1,0 +1,22 @@
+# --- Core Data Science ---
+numpy>=1.24.0
+pandas>=2.0.0
+matplotlib>=3.7.0
+seaborn>=0.12.0
+
+# --- Machine Learning (Baseline) ---
+scikit-learn>=1.2.2
+joblib>=1.2.0
+
+# --- Deep Learning (DistilBERT) ---
+torch>=2.0.0
+transformers>=4.30.0
+accelerate>=0.20.0  # Required for HuggingFace Trainer
+
+# --- Text Preprocessing ---
+nltk>=3.8.1
+regex>=2023.6.3
+
+# --- Visualization & Explainability ---
+wordcloud>=1.9.0
+lime>=0.2.0
