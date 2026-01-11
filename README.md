@@ -619,6 +619,15 @@ To capture context beyond keyword matching (e.g., distinguishing "I want to die"
 *   **Architecture:** `distilbert-base-uncased` with a binary classification head.
 *   **Advantage:** Successfully identifies indirect ideation (coded language) that TF-IDF models miss.
 
+### Models
+
+| Model | Type | Size | Download Link |
+|-------|------|------|---------------|
+| **Logistic Regression** | Baseline (Scikit-Learn) | ~5MB | [Inside Repo](models/TF-IDF+logistic_regression.pkl) |
+| **DistilBERT (Fine-Tuned)** | Transformer (PyTorch) | ~260MB | [**Download from Google Drive**]((https://drive.google.com/drive/folders/1eif3SFSC2klntItauuEWaGF1WYw7egda?usp=drive_link)) |
+
+> **Note:** The DistilBERT model is hosted externally due to GitHub's file size limits.
+
 ### Model Comparison Results
 
 | Model | Class Weight | Recall (SI) | Precision (SI) | F1-Score | Use Case |
