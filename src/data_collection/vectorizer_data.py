@@ -51,7 +51,7 @@ def main():
     print("⏳ Loading Dataset...")
     # REPLACE THIS with the path to your actual raw CSV
     # Your dataset likely has columns like 'title' and 'body' or 'combined_text'
-    df = pd.read_csv('/content/SID_DATA_WITH_SPLITS.csv')
+    df = pd.read_csv('/home/paras9o9/my-code/Suicidal-Ideation-Detection-using-Machine-Learning-/data/csv/SID_DATA_WITH_SPLITS.csv')
 
     # Basic check: Ensure we have the text column
     # If your column is named 'text' or 'selftext', change 'combined_text' below
