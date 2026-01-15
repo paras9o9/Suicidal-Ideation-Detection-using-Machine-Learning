@@ -1,3 +1,6 @@
+# --- Web App Framework ---
+streamlit>=1.30.0
+
 # --- Core Data Science ---
 numpy>=1.24.0
 pandas>=2.0.0
@@ -11,7 +14,7 @@ joblib>=1.2.0
 # --- Deep Learning (DistilBERT) ---
 torch>=2.0.0
 transformers>=4.30.0
-accelerate>=0.20.0  # Required for HuggingFace Trainer
+accelerate>=0.20.0
 
 # --- Text Preprocessing ---
 nltk>=3.8.1
