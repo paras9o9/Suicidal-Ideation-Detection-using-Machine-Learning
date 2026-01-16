@@ -69,9 +69,9 @@ def load_assets():
     
     # Paths based on your structure
     # NOTE: You named it 'tfidf_vectorizer.pkl' in your script, but 'lr_model.pkl' usually
-    model_path = os.path.join(base_dir, '/home/paras9o9/my-code/Suicidal-Ideation-Detection-using-Machine-Learning-/models', 'lr_model.pkl')
+    model_path = os.path.join(base_dir, 'Suicidal-Ideation-Detection-using-Machine-Learning-/models', 'lr_model.pkl')
     
-    vec_path = os.path.join(base_dir, '/home/paras9o9/my-code/Suicidal-Ideation-Detection-using-Machine-Learning-/models', 'tfidf_vectorizer.pkl') 
+    vec_path = os.path.join(base_dir, 'Suicidal-Ideation-Detection-using-Machine-Learning-/models', 'tfidf_vectorizer.pkl') 
     
     if not os.path.exists(model_path) or not os.path.exists(vec_path):
         return None, None
