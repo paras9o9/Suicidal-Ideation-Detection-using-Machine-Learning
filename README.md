@@ -2,7 +2,7 @@
 
 Building a machine learning tool to detect suicidal ideation, suicidal plans, suicide attempts, suicide crisis, suicidal behavior, and non-suicidal self-injury (NSSI) from textual data is a feasible and promising approach supported by recent research.
 
-Streamlit Link (TF-IDF+LR model): [suicidal-ideation-detection-using-machine-learning ∙ main ∙ src/app/app.py]
+Streamlit Link (TF-IDF+LR model): [https://wngnuxm3xtpkphjvdenemb.streamlit.app/]
 
 ### Executive summary
 - Dataset’s purpose: To support research and model development for detecting suicidal ideation in social media text amoung the young population suffering in silent     and maybe trying to express themsefls on online, enabling early-risk signals while prioritizing privacy, ethics, and harm reduction.
