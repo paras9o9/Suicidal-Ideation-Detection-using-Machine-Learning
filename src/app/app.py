@@ -103,6 +103,12 @@ def load_assets():
         
     return model, vectorizer
 
+model, vectorizer = load_assets()
+
+if model is None or vectorizer is None:
+    st.error("⚠️ Critical Error: Failed to load models. App cannot start.")
+    st.stop()
+    
 # --- 4. User Interface ---
 st.subheader("Analyze Post")
 user_input = st.text_area("Enter text:", height=150, placeholder="e.g., I feel trapped and see no way out...")
