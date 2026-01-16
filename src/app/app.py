@@ -104,11 +104,20 @@ def load_assets():
     return model, vectorizer
 
 model, vectorizer = load_assets()
-
 if model is None or vectorizer is None:
-    st.error("⚠️ Critical Error: Failed to load models. App cannot start.")
     st.stop()
+
+# ==========================================
+# CRITICAL FIX 2: DEFINE THE LIME FUNCTION
+# ==========================================
+def explain_prediction(text, model, vectorizer):
+    def predict_proba_func(texts):
+        vectors = vectorizer.transform(texts)
+        return model.predict_proba(vectors)
     
+    explainer = LimeTextExplainer(class_names=model.classes_)
+    exp = explainer.explain_instance(text, predict_proba_func, num_features=6, top_labels=1)
+    return exp
 # --- 4. User Interface ---
 st.subheader("Analyze Post")
 user_input = st.text_area("Enter text:", height=150, placeholder="e.g., I feel trapped and see no way out...")
