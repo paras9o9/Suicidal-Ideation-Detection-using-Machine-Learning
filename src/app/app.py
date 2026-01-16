@@ -62,57 +62,46 @@ st.markdown("""
 st.title("🧠 Mental Health Text Analysis")
 st.caption("Research Model v1.0 • NLP with Negation Handling")
 
-# --- 3. Load Assets ---
+# --- 3. Load Assets (Bulletproof Version) ---
 @st.cache_resource
 def load_assets():
-    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    # 1. Try to find the 'models' folder relative to THIS file
+    current_dir = os.path.dirname(os.path.abspath(__file__))
     
-    # Paths based on your structure
-    # NOTE: You named it 'tfidf_vectorizer.pkl' in your script, but 'lr_model.pkl' usually
-    model_path = os.path.join(base_dir, 'models', 'lr_model.pkl')
+    # We look up to 3 levels up to find the 'models' folder
+    possible_paths = [
+        os.path.join(current_dir, 'models'),                # Same folder
+        os.path.join(current_dir, '..', 'models'),          # One level up (src/models)
+        os.path.join(current_dir, '..', '..', 'models'),    # Two levels up (repo/models)
+    ]
     
-    vec_path = os.path.join(base_dir, 'models', 'tfidf_vectorizer.pkl') 
+    models_dir = None
+    for path in possible_paths:
+        if os.path.isdir(path):
+            models_dir = path
+            break
+            
+    if models_dir is None:
+        st.error(f"❌ Critical Error: Could not find 'models' directory. Checked: {possible_paths}")
+        return None, None
+
+    model_path = os.path.join(models_dir, 'lr_model.pkl')
+    vec_path = os.path.join(models_dir, 'tfidf_vectorizer.pkl') 
     
-    if not os.path.exists(model_path) or not os.path.exists(vec_path):
+    if not os.path.exists(model_path):
+        st.error(f"❌ Model missing at: {model_path}")
+        return None, None
+        
+    if not os.path.exists(vec_path):
+        st.error(f"❌ Vectorizer missing at: {vec_path}")
         return None, None
         
     with open(model_path, 'rb') as f:
         model = pickle.load(f)
     with open(vec_path, 'rb') as f:
         vectorizer = pickle.load(f)
+        
     return model, vectorizer
-
-model, vectorizer = load_assets()
-
-if model is None:
-    st.error("⚠️ System Error: Model files not found.")
-    st.warning("Did you run `vectorize_data.py` and save the files to `models/`?")
-    st.stop()
-
-def explain_prediction(text, model, vectorizer):
-    """
-    Generates a LIME explanation for the given text.
-    """
-    # 1. Create a "Probe" function
-    # LIME needs a function that takes raw text and outputs probabilities
-    def predict_proba_func(texts):
-        # Transform using your vectorizer
-        vectors = vectorizer.transform(texts)
-        # Get probabilities from your model
-        return model.predict_proba(vectors)
-
-    # 2. Initialize LIME Explainer
-    explainer = LimeTextExplainer(class_names=model.classes_)
-
-    # 3. Generate Explanation
-    # num_features=6 means "Show me the top 6 most important words"
-    exp = explainer.explain_instance(
-        text, 
-        predict_proba_func, 
-        num_features=6, 
-        top_labels=1
-    )
-    return exp
 
 # --- 4. User Interface ---
 st.subheader("Analyze Post")
