@@ -693,7 +693,7 @@ Using LIME and coefficient analysis, we audited for "Clever Hans" effects:
 *   **Risk:** This could cause false negatives for students planning attempts.
 *   **Fix:** We removed these "spurious features" from the vocabulary during the feature selection phase to force the model to focus on psycholinguistic markers (hopelessness, pain, entrapment).
 
-## 🔍 Explainability & Interpretability
+## Explainability & Interpretability
 
 To mitigate the "black box" risk in clinical AI, we audited our models using **LIME (Local Interpretable Model-agnostic Explanations)** and coefficient analysis. This ensures the model's high accuracy is based on valid psychological signals, not spurious shortcuts.
 
@@ -766,7 +766,7 @@ Explainability tools like SHAP and LIME provide *mathematical* explanations, not
 *   **Limitation:** A high "safety" score from the model does not guarantee a patient is safe; it only means the text lacks the specific linguistic patterns the model learned.
 *   **Ethical Guardrail:** In any deployment, a "Low Risk" prediction must be presented with the disclaimer: *"Absence of detected keywords does not confirm safety. Clinical judgment is required."*
 
-## 🔄 Reproducibility Framework
+## Reproducibility Framework
 
 To ensure that our results can be independently verified and built upon, we implemented a rigorous versioning and logging protocol following the *NeurIPS Reproducibility Checklist*.
 
