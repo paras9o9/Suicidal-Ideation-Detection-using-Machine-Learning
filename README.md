@@ -11,7 +11,7 @@ Streamlit Link (TF-IDF+LR model): [https://wngnuxm3xtpkphjvdenemb.streamlit.app/
         'SI': ['SuicideWatch, 'selfharm', 'AdultSelfHarm'],  # High SI probability
         'MH': ['depression', 'BPD', 'Vent', 'mentalhealth', 'MentalHealthSupport', 'SelfHate'],  # Mental health with SI screening
         'NEU': ['college', 'collegeIndia', 'TwentiesIndia'], # For Netural behavior
-        'HUMOR': ['teenagers', 'suicidebywords', 'memes', 'darkjokes','IndianDankMemes', 'dankmemes', '2meirl4meirl'] # For distingushing humor and SI ideation
+        'HUMOR': ['teenagers', 'suicidebywords', 'memes', 'darkjokes','IndianDankMemes', 'dankmemes', '2meirl4meirl'] # For distingushing humour and SI ideation
     )
 - labeling scheme (binary and multi-level):
   - Binary classes: Every post is labeled either “suicidal ideation” or “non‑suicidal,” nothing in between. This makes models easier to train and results simpler to      report, but it can’t tell apart different risk levels like passive thoughts, active intent, or plans. Binary labeling reduces annotation effort and class             imbalance complexity, providing a clean starting point for benchmarking before moving to multi‑level labels.
@@ -162,9 +162,9 @@ MH (Mental Health): Mental health discourse including symptoms, coping strategie
 
 NEU (Neutral): Off-topic content with no mental health or suicidality indicators (e.g., general life topics, hobbies, logistics).​
 
-HUMOR: Humorous or sarcastic content without first-person ideation; posts with genuine ideation masked as humor are labeled SI to prioritize safety.​
+HUMOR: Humorous or sarcastic content without first-person ideation; posts with genuine ideation masked as humour are labeled SI to prioritize safety.​
 
-This multi-class scheme captures nuanced distinctions between suicidal content, mental health distress, neutral discourse, and humor, enabling richer analysis of model behavior and supporting research on disambiguation of dark humor from genuine risk signals.​
+This multi-class scheme captures nuanced distinctions between suicidal content, mental health distress, neutral discourse, and humour, enabling richer analysis of model behavior and supporting research on disambiguation of dark humour from genuine risk signals.​
 
 The SI class incorporates severity distinctions informed by the Columbia-Suicide Severity Rating Scale (C-SSRS), differentiating passive ideation (wish to be dead, no plan) from active ideation with intent or planning, though both are collapsed into a single SI label for this dataset version to maintain annotation consistency and sample size.​
 
@@ -185,7 +185,7 @@ Four-class multiclass classification:​
 Label	Definition	Count	Percentage
 SI (Suicidal Ideation)	Posts expressing suicidal thoughts, plans, or intent	1,315	18.3%
 MH (Mental Health)	Posts about depression, anxiety, or mental health without SI	2,860	39.8%
-HUMOR	Memes, jokes, or humorous content related to mental health	2,164	30.1%
+HUMOR	Memes, jokes, or humourous content related to mental health	2,164	30.1%
 NEU (Neutral)	General discussion or informational posts	841	11.7%
 
 3. **Annotation Codebook**
@@ -292,7 +292,7 @@ Example edge case:
 Post: "POV: You're planning your unaliving for the 100th time this week lol"
 
 - Contains SI keywords ("unaliving", "planning")
-- But humor markers ("lol", "POV", "100th time")
+- But humour markers ("lol", "POV", "100th time")
 
 Resolution: Labeled as HUMOR
 Heuristic: Presence of meme formatting, exaggeration, or laugh reactions → HUMOR category
@@ -821,7 +821,7 @@ While our model achieves high accuracy on benchmark data, it operates within str
 *   **The "Metaphor Problem":** The model struggles to distinguish between:
     *   *Literal:* "I'm going to kill myself." (High Risk)
     *   *Figurative:* "I'm going to kill myself if this compile error doesn't go away." (Low Risk)
-*   **Sarcasm:** Dark humor, prevalent in Gen-Z communities (e.g., *"I want to die lol"*), is frequently misclassified as genuine risk because the model lacks the social context to detect the sarcastic tone.
+*   **Sarcasm:** Dark humour, prevalent in Gen-Z communities (e.g., *"I want to die lol"*), is frequently misclassified as genuine risk because the model lacks the social context to detect the sarcastic tone.
 
 ### 4. Deployment Caution
 *   **No Clinical Diagnosis:** This tool is a **screening aid**, not a diagnostic device. It generates a probabilistic risk score based on text patterns, which is **not** equivalent to a clinical assessment of intent.
