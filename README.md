@@ -11,12 +11,12 @@ Streamlit Link (TF-IDF+LR model): [https://wngnuxm3xtpkphjvdenemb.streamlit.app/
         'SI': ['SuicideWatch, 'selfharm', 'AdultSelfHarm'],  # High SI probability
         'MH': ['depression', 'BPD', 'Vent', 'mentalhealth', 'MentalHealthSupport', 'SelfHate'],  # Mental health with SI screening
         'NEU': ['college', 'collegeIndia', 'TwentiesIndia'], # For Netural behavior
-        'HUMOR': ['teenagers', 'suicidebywords', 'memes', 'darkjokes','IndianDankMemes', 'dankmemes', '2meirl4meirl'] # For distingushing humour and SI ideation
+        'Humour': ['teenagers', 'suicidebywords', 'memes', 'darkjokes','IndianDankMemes', 'dankmemes', '2meirl4meirl'] # For distingushing Humour and SI ideation
     )
 - labeling scheme (binary and multi-level):
   - Binary classes: Every post is labeled either “suicidal ideation” or “non‑suicidal,” nothing in between. This makes models easier to train and results simpler to      report, but it can’t tell apart different risk levels like passive thoughts, active intent, or plans. Binary labeling reduces annotation effort and class             imbalance complexity, providing a clean starting point for benchmarking before moving to multi‑level labels.
 
-  - Multi‑level: multiple classes that capture risk levels or categories, such as Mental Health, Neutral and Humor, this offers richer signals for analysis and           multiple levels let models and analyses distinguish passive thoughts from planning or attempts, which is valuable for research on risk progression and triage         logic.
+  - Multi‑level: multiple classes that capture risk levels or categories, such as Mental Health, Neutral and Humour, this offers richer signals for analysis and           multiple levels let models and analyses distinguish passive thoughts from planning or attempts, which is valuable for research on risk progression and triage         logic.
  
 - Preprocessing scope:
     We de‑identify user references, filter by English language and length, remove spam/duplicates, and apply OCR to image posts to extract embedded text.                 All steps are deterministic and versioned.
@@ -154,7 +154,7 @@ Binary labels reduce annotation complexity, class imbalance challenges, and mode
 
 Rationale: Many real-world triage systems require a simple yes/no risk flag; binary framing also facilitates comparison with prior Reddit SI detection work.​
 
-**Multi-class classification (SI, MH, NEU, HUMOR):**
+**Multi-class classification (SI, MH, NEU, Humour):**
 
 SI: First-person expressions of desire, intent, plan, or method to die or self-harm, encompassing both passive ideation ("wish I were dead") and active ideation with method consideration or planning.​
 
@@ -162,9 +162,9 @@ MH (Mental Health): Mental health discourse including symptoms, coping strategie
 
 NEU (Neutral): Off-topic content with no mental health or suicidality indicators (e.g., general life topics, hobbies, logistics).​
 
-HUMOR: Humorous or sarcastic content without first-person ideation; posts with genuine ideation masked as humour are labeled SI to prioritize safety.​
+Humour: Humourous or sarcastic content without first-person ideation; posts with genuine ideation masked as Humour are labeled SI to prioritize safety.​
 
-This multi-class scheme captures nuanced distinctions between suicidal content, mental health distress, neutral discourse, and humour, enabling richer analysis of model behavior and supporting research on disambiguation of dark humour from genuine risk signals.​
+This multi-class scheme captures nuanced distinctions between suicidal content, mental health distress, neutral discourse, and Humour, enabling richer analysis of model behavior and supporting research on disambiguation of dark Humour from genuine risk signals.​
 
 The SI class incorporates severity distinctions informed by the Columbia-Suicide Severity Rating Scale (C-SSRS), differentiating passive ideation (wish to be dead, no plan) from active ideation with intent or planning, though both are collapsed into a single SI label for this dataset version to maintain annotation consistency and sample size.​
 
@@ -185,7 +185,7 @@ Four-class multiclass classification:​
 Label	Definition	Count	Percentage
 SI (Suicidal Ideation)	Posts expressing suicidal thoughts, plans, or intent	1,315	18.3%
 MH (Mental Health)	Posts about depression, anxiety, or mental health without SI	2,860	39.8%
-HUMOR	Memes, jokes, or humourous content related to mental health	2,164	30.1%
+Humour	Memes, jokes, or Humourous content related to mental health	2,164	30.1%
 NEU (Neutral)	General discussion or informational posts	841	11.7%
 
 3. **Annotation Codebook**
@@ -234,7 +234,7 @@ Class	Annotator A Count	Annotator B Count	Agreement
 SI	60	60	100%
 MH	60	60	100%
 NEU	40	40	100%
-HUMOR	40	40	100%
+Humour	40	40	100%
 
 5. **Adjudication Process**
 Procedure:​
@@ -284,7 +284,7 @@ Feature analysis finding:
 - has_self_harm had negative coefficient (-0.44) for SI prediction
 - Self-harm language more common in MH posts than SI posts
 
-6.3 Dark Humor vs Genuine SI
+6.3 Dark Humour vs Genuine SI
 
 Challenge: Distinguishing suicidal memes from real distress
 
@@ -292,10 +292,10 @@ Example edge case:
 Post: "POV: You're planning your unaliving for the 100th time this week lol"
 
 - Contains SI keywords ("unaliving", "planning")
-- But humour markers ("lol", "POV", "100th time")
+- But Humour markers ("lol", "POV", "100th time")
 
-Resolution: Labeled as HUMOR
-Heuristic: Presence of meme formatting, exaggeration, or laugh reactions → HUMOR category
+Resolution: Labeled as Humour
+Heuristic: Presence of meme formatting, exaggeration, or laugh reactions → Humour category
 
 7. **Quality Control Measures**
 7.1 Pilot Validation​
@@ -304,7 +304,7 @@ Heuristic: Presence of meme formatting, exaggeration, or laugh reactions → HUM
 
 7.2 Automated Consistency Checks
 
-- Script validated all labels were in {SI, MH, NEU, HUMOR}
+- Script validated all labels were in {SI, MH, NEU, Humour}
 - Flagged missing labels (none found in final dataset)
 - Checked train/val/test split integrity (70/15/15 maintained)
 
@@ -316,7 +316,7 @@ Heuristic: Presence of meme formatting, exaggeration, or laugh reactions → HUM
 8. **Annotation Statistics**
 Final Dataset Composition:​
 
-Split	Total Posts	SI	MH	NEU	HUMOR
+Split	Total Posts	SI	MH	NEU	Humour
 Train	5,026 (70%)	920	2,002	588	1,516
 Validation	1,077 (15%)	198	429	126	324
 Test	1,077 (15%)	197	429	127	324
@@ -528,21 +528,21 @@ Training Set (5,026 posts - 70%)
 | SI    | 920   | 18.3%               | 69.9% of all SI posts     |
 | MH    | 2,002 | 39.8%               | 70.0% of all MH posts     |
 | NEU   | 588   | 11.7%               | 69.9% of all NEU posts    |
-| HUMOR | 1,516 | 30.2%               | 70.0% of all HUMOR posts  |
+| Humour | 1,516 | 30.2%               | 70.0% of all Humour posts  |
 
 | Label | Count | Percentage of Val | Percentage of Total Class |
 | ----- | ----- | ----------------- | ------------------------- |
 | SI    | 198   | 18.4%             | 15.1% of all SI posts     |
 | MH    | 429   | 39.8%             | 15.0% of all MH posts     |
 | NEU   | 126   | 11.7%             | 15.0% of all NEU posts    |
-| HUMOR | 324   | 30.1%             | 15.0% of all HUMOR posts  |
+| Humour | 324   | 30.1%             | 15.0% of all Humour posts  |
 
 | Label | Count | Percentage of Test | Percentage of Total Class |
 | ----- | ----- | ------------------ | ------------------------- |
 | SI    | 197   | 18.3%              | 15.0% of all SI posts     |
 | MH    | 429   | 39.8%              | 15.0% of all MH posts     |
 | NEU   | 127   | 11.8%              | 15.1% of all NEU posts    |
-| HUMOR | 324   | 30.1%              | 15.0% of all HUMOR posts  |
+| Humour | 324   | 30.1%              | 15.0% of all Humour posts  |
 
 Observation: Class proportions nearly identical across splits, suggesting approximate stratification was achieved.
 
@@ -821,7 +821,7 @@ While our model achieves high accuracy on benchmark data, it operates within str
 *   **The "Metaphor Problem":** The model struggles to distinguish between:
     *   *Literal:* "I'm going to kill myself." (High Risk)
     *   *Figurative:* "I'm going to kill myself if this compile error doesn't go away." (Low Risk)
-*   **Sarcasm:** Dark humour, prevalent in Gen-Z communities (e.g., *"I want to die lol"*), is frequently misclassified as genuine risk because the model lacks the social context to detect the sarcastic tone.
+*   **Sarcasm:** Dark Humour, prevalent in Gen-Z communities (e.g., *"I want to die lol"*), is frequently misclassified as genuine risk because the model lacks the social context to detect the sarcastic tone.
 
 ### 4. Deployment Caution
 *   **No Clinical Diagnosis:** This tool is a **screening aid**, not a diagnostic device. It generates a probabilistic risk score based on text patterns, which is **not** equivalent to a clinical assessment of intent.
